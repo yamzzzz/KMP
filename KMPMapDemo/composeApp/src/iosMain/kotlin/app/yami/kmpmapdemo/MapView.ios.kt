@@ -1,0 +1,60 @@
+package app.yami.kmpmapdemo
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitView
+import cocoapods.GoogleMaps.GMSAdvancedMarker.Companion.markerImageWithColor
+import cocoapods.GoogleMaps.GMSCameraPosition
+import cocoapods.GoogleMaps.GMSCameraUpdate
+import cocoapods.GoogleMaps.GMSMapView
+import cocoapods.GoogleMaps.GMSMarker
+import kotlinx.cinterop.ExperimentalForeignApi
+import platform.CoreLocation.CLLocationCoordinate2DMake
+import platform.UIKit.UIColor
+
+
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun MapView(
+    modifier: Modifier,
+    vararg mapValues: MapValues,
+    zoom: Float
+) {
+
+    UIKitView(
+        factory = {
+            val mapView = GMSMapView()
+            mapView.settings.zoomGestures = true
+            mapView.settings.consumesGesturesInView = true
+            mapValues.forEach { entry ->
+                GMSMarker().apply {
+                    this.position = CLLocationCoordinate2DMake(
+                        latitude = entry.latitude,
+                        longitude = entry.longitude
+                    )
+                    this.title = entry.title
+                    this.snippet = entry.snippet
+                    markerImageWithColor(UIColor.redColor)
+                }.map = mapView
+            }
+            val camera: GMSCameraPosition? = if (mapValues.isNotEmpty()) {
+                GMSCameraPosition.cameraWithLatitude(
+                    latitude = mapValues.first().latitude,
+                    longitude = mapValues.first().longitude,
+                    zoom = zoom
+                )
+            } else {
+                null
+            }
+            camera?.let {
+                mapView.moveCamera(GMSCameraUpdate.setCamera(camera))
+            }
+
+            mapView
+        },
+        modifier = modifier,
+        onRelease = {
+            it.removeFromSuperview()
+        }
+    )
+}
