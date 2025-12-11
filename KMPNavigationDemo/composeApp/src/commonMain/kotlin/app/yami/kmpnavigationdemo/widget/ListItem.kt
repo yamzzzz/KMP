@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,9 @@ fun ListItem(
             )
             Text(
                 text = description,
-                fontSize = TextUnit(14F, TextUnitType.Sp)
+                fontSize = TextUnit(14F, TextUnitType.Sp),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
